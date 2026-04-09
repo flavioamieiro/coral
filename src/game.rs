@@ -123,10 +123,12 @@ impl Widget for &mut Game {
             "d: right |".into(),
             "| q: quit ".into(),
         ]);
+        let current_level = Line::from(format!(" Level: {} ", self.level));
 
         let block = Block::bordered()
             .title(title.centered())
-            .title_bottom(keymap.centered());
+            .title_bottom(keymap.left_aligned())
+            .title_bottom(current_level.right_aligned());
 
         canvas::Canvas::default()
             .block(block)
