@@ -76,8 +76,8 @@ impl Game {
 impl Default for Game {
     fn default() -> Self {
         Game {
-            width: 200,
-            height: 200,
+            width: 50,
+            height: 50,
             snake: Snake::new(),
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
@@ -138,8 +138,9 @@ mod tests {
         snake.positions = positions;
 
         let mut game = Game {
-            width: 200,
-            height: 200,
+            width: 50,
+            height: 50,
+            level: 1,
             snake,
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
@@ -161,8 +162,9 @@ mod tests {
         snake.positions = positions;
 
         let mut game = Game {
-            width: 200,
-            height: 200,
+            width: 50,
+            height: 50,
+            level: 1,
             snake,
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
@@ -184,8 +186,9 @@ mod tests {
         snake.positions = positions;
 
         let mut game = Game {
-            width: 200,
-            height: 200,
+            width: 50,
+            height: 50,
+            level: 1,
             snake,
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
@@ -207,8 +210,9 @@ mod tests {
         snake.positions = positions;
 
         let mut game = Game {
-            width: 200,
-            height: 200,
+            width: 50,
+            height: 50,
+            level: 1,
             snake,
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
@@ -233,8 +237,9 @@ mod tests {
         snake.positions = positions;
 
         let mut game = Game {
-            width: 200,
-            height: 200,
+            width: 50,
+            height: 50,
+            level: 1,
             snake,
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
@@ -256,8 +261,9 @@ mod tests {
         snake.positions = positions;
 
         let mut game = Game {
-            width: 200,
-            height: 200,
+            width: 50,
+            height: 50,
+            level: 1,
             snake,
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
