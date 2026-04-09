@@ -1,7 +1,7 @@
 #[derive(Debug, PartialEq)]
 pub struct Point {
-    pub x: u32,
-    pub y: u32,
+    pub x: i32,
+    pub y: i32,
 }
 
 #[derive(Debug, PartialEq)]
@@ -157,6 +157,54 @@ mod tests {
             Point { x: 9, y: 0 },
             Point { x: 8, y: 0 },
             Point { x: 7, y: 0 },
+        ];
+
+        snake.update();
+
+        assert_eq!(snake.positions, expected_positions);
+    }
+
+    #[test]
+    fn update_snake_goes_past_min_x() {
+        let initial_positions = vec![
+            Point { x: 2, y: 0 },
+            Point { x: 1, y: 0 },
+            Point { x: 0, y: 0 },
+        ];
+
+        let mut snake = Snake {
+            positions: initial_positions,
+            direction: Direction::Left,
+        };
+
+        let expected_positions = vec![
+            Point { x: 1, y: 0 },
+            Point { x: 0, y: 0 },
+            Point { x: -1, y: 0 },
+        ];
+
+        snake.update();
+
+        assert_eq!(snake.positions, expected_positions);
+    }
+
+    #[test]
+    fn update_snake_goes_past_min_y() {
+        let initial_positions = vec![
+            Point { x: 1, y: 2 },
+            Point { x: 1, y: 1 },
+            Point { x: 1, y: 0 },
+        ];
+
+        let mut snake = Snake {
+            positions: initial_positions,
+            direction: Direction::Down,
+        };
+
+        let expected_positions = vec![
+            Point { x: 1, y: 1 },
+            Point { x: 1, y: 0 },
+            Point { x: 1, y: -1 },
         ];
 
         snake.update();
