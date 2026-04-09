@@ -8,9 +8,33 @@ use ratatui::{
     DefaultTerminal,
 };
 
+struct Point {
+    x: u32,
+    y: u32,
+}
+
+struct Snake {
+    positions: Vec<Point>,
+}
+
+impl Snake {
+    pub fn new() -> Self {
+        let mut starting_position = Vec::new();
+
+        for i in 100..120 {
+            starting_position.push(Point { x: i, y: 100 });
+        }
+
+        Snake {
+            positions: starting_position,
+        }
+    }
+}
+
 pub struct Game {
     width: u32,
     height: u32,
+    snake: Snake,
 }
 
 impl Game {
@@ -34,6 +58,7 @@ impl Default for Game {
         Game {
             width: 200,
             height: 200,
+            snake: Snake::new(),
         }
     }
 }
@@ -53,38 +78,14 @@ impl Widget for &mut Game {
             .title(title.centered())
             .title_bottom(keymap.centered());
 
-        let snake_pos = vec![
-            (85.0, 90.0),
-            (86.0, 90.0),
-            (87.0, 90.0),
-            (88.0, 90.0),
-            (89.0, 90.0),
-            (90.0, 90.0),
-            (90.0, 91.0),
-            (90.0, 92.0),
-            (90.0, 93.0),
-            (90.0, 94.0),
-            (90.0, 95.0),
-            (90.0, 96.0),
-            (90.0, 97.0),
-            (90.0, 98.0),
-            (90.0, 99.0),
-            (91.0, 99.0),
-            (92.0, 99.0),
-            (93.0, 99.0),
-            (94.0, 99.0),
-            (95.0, 99.0),
-            (96.0, 99.0),
-        ];
-
         canvas::Canvas::default()
             .block(block)
             .x_bounds([0.0, self.width.into()])
             .y_bounds([0.0, self.height.into()])
             .paint(|ctx| {
                 ctx.marker(symbols::Marker::Sextant);
-                for (x, y) in &snake_pos {
-                    ctx.draw(&canvas::Rectangle::new(*x, *y, 1.0, 1.0, Color::Magenta));
+                for point in &self.snake.positions {
+                    ctx.draw(&canvas::Rectangle::new(point.x.into(), point.y.into(), 1.0, 1.0, Color::Magenta));
                 }
             })
             .render(area, buf);
