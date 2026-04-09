@@ -15,7 +15,7 @@ pub struct Game {
     width: u32,
     height: u32,
     snake: Snake,
-    tick_timeout: std::time::Duration,
+    poll_timeout: std::time::Duration,
     over: bool,
 }
 
@@ -36,7 +36,7 @@ impl Game {
     }
 
     fn handle_keys(&mut self) -> std::io::Result<()> {
-        if crossterm::event::poll(self.tick_timeout)?
+        if crossterm::event::poll(self.poll_timeout)?
             && let Event::Key(event) = crossterm::event::read()?
         {
             match event.code {
@@ -54,11 +54,12 @@ impl Game {
     }
 
     fn check_collisions(&mut self) -> bool {
-        for point in &self.snake.positions {
+        for (idx, point) in self.snake.positions.iter().enumerate() {
             if point.x < 0
                 || point.x >= self.width as i32
                 || point.y < 0
                 || point.y >= self.height as i32
+                || self.snake.positions[..idx].contains(point)
             {
                 self.stop();
                 return true;
@@ -78,7 +79,7 @@ impl Default for Game {
             width: 200,
             height: 200,
             snake: Snake::new(),
-            tick_timeout: std::time::Duration::from_millis(100),
+            poll_timeout: std::time::Duration::from_millis(100),
             over: false,
         }
     }
@@ -119,6 +120,7 @@ impl Widget for &mut Game {
     }
 }
 
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -139,7 +141,7 @@ mod tests {
             width: 200,
             height: 200,
             snake,
-            tick_timeout: std::time::Duration::from_millis(100),
+            poll_timeout: std::time::Duration::from_millis(100),
             over: false,
         };
 
@@ -162,7 +164,7 @@ mod tests {
             width: 200,
             height: 200,
             snake,
-            tick_timeout: std::time::Duration::from_millis(100),
+            poll_timeout: std::time::Duration::from_millis(100),
             over: false,
         };
 
@@ -185,7 +187,7 @@ mod tests {
             width: 200,
             height: 200,
             snake,
-            tick_timeout: std::time::Duration::from_millis(100),
+            poll_timeout: std::time::Duration::from_millis(100),
             over: false,
         };
 
@@ -208,11 +210,60 @@ mod tests {
             width: 200,
             height: 200,
             snake,
-            tick_timeout: std::time::Duration::from_millis(100),
+            poll_timeout: std::time::Duration::from_millis(100),
             over: false,
         };
 
         assert!(game.check_collisions());
         assert!(game.over);
+    }
+
+    #[test]
+    fn collide_if_snake_hits_itself() {
+        let positions = vec![
+            Point { x: 0, y: 0 },
+            Point { x: 0, y: 1 },
+            Point { x: 0, y: 2 },
+            Point { x: 1, y: 2 },
+            Point { x: 1, y: 1 },
+            Point { x: 0, y: 1 },
+        ];
+
+        let mut snake = Snake::new();
+        snake.positions = positions;
+
+        let mut game = Game {
+            width: 200,
+            height: 200,
+            snake,
+            poll_timeout: std::time::Duration::from_millis(100),
+            over: false,
+        };
+
+        assert!(game.check_collisions());
+        assert!(game.over);
+    }
+
+    #[test]
+    fn does_not_collide_if_snake_does_not_hit_itself() {
+        let positions = vec![
+            Point { x: 0, y: 0 },
+            Point { x: 0, y: 1 },
+            Point { x: 0, y: 2 },
+        ];
+
+        let mut snake = Snake::new();
+        snake.positions = positions;
+
+        let mut game = Game {
+            width: 200,
+            height: 200,
+            snake,
+            poll_timeout: std::time::Duration::from_millis(100),
+            over: false,
+        };
+
+        assert!(!game.check_collisions());
+        assert!(!game.over);
     }
 }
