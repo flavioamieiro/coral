@@ -25,6 +25,7 @@ impl Game {
             self.handle_keys()?;
             self.draw(terminal)?;
             self.snake.update();
+            self.check_collisions();
         }
         Ok(())
     }
@@ -50,6 +51,20 @@ impl Game {
             }
         };
         Ok(())
+    }
+
+    fn check_collisions(&mut self) -> bool {
+        for point in &self.snake.positions {
+            if point.x < 0
+                || point.x >= self.width as i32
+                || point.y < 0
+                || point.y >= self.height as i32
+            {
+                self.stop();
+                return true;
+            }
+        }
+        false
     }
 
     fn stop(&mut self) {
@@ -101,5 +116,103 @@ impl Widget for &mut Game {
                 }
             })
             .render(area, buf);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::snake::Point;
+
+    #[test]
+    fn collide_if_snake_hits_left_wall() {
+        let positions = vec![
+            Point { x: -1, y: 0 },
+            Point { x: 0, y: 0 },
+            Point { x: 1, y: 0 },
+        ];
+
+        let mut snake = Snake::new();
+        snake.positions = positions;
+
+        let mut game = Game {
+            width: 200,
+            height: 200,
+            snake,
+            tick_timeout: std::time::Duration::from_millis(100),
+            over: false,
+        };
+
+        assert!(game.check_collisions());
+        assert!(game.over);
+    }
+
+    #[test]
+    fn collide_if_snake_hits_bottom_wall() {
+        let positions = vec![
+            Point { x: 0, y: 1 },
+            Point { x: 0, y: 0 },
+            Point { x: 0, y: -1 },
+        ];
+
+        let mut snake = Snake::new();
+        snake.positions = positions;
+
+        let mut game = Game {
+            width: 200,
+            height: 200,
+            snake,
+            tick_timeout: std::time::Duration::from_millis(100),
+            over: false,
+        };
+
+        assert!(game.check_collisions());
+        assert!(game.over);
+    }
+
+    #[test]
+    fn collide_if_snake_hits_right_wall() {
+        let positions = vec![
+            Point { x: 198, y: 1 },
+            Point { x: 199, y: 1 },
+            Point { x: 200, y: 1 },
+        ];
+
+        let mut snake = Snake::new();
+        snake.positions = positions;
+
+        let mut game = Game {
+            width: 200,
+            height: 200,
+            snake,
+            tick_timeout: std::time::Duration::from_millis(100),
+            over: false,
+        };
+
+        assert!(game.check_collisions());
+        assert!(game.over);
+    }
+
+    #[test]
+    fn collide_if_snake_hits_top_wall() {
+        let positions = vec![
+            Point { x: 0, y: 198 },
+            Point { x: 0, y: 199 },
+            Point { x: 0, y: 200 },
+        ];
+
+        let mut snake = Snake::new();
+        snake.positions = positions;
+
+        let mut game = Game {
+            width: 200,
+            height: 200,
+            snake,
+            tick_timeout: std::time::Duration::from_millis(100),
+            over: false,
+        };
+
+        assert!(game.check_collisions());
+        assert!(game.over);
     }
 }
