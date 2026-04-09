@@ -1,3 +1,4 @@
+use crossterm::event::{Event, KeyCode};
 use ratatui::{
     buffer::Buffer,
     layout::Rect,
@@ -35,21 +36,35 @@ pub struct Game {
     width: u32,
     height: u32,
     snake: Snake,
+    tick_timeout: std::time::Duration,
+    over: bool,
 }
 
 impl Game {
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> std::io::Result<()> {
-        loop {
+        while !self.over {
+            self.handle_keys()?;
             self.draw(terminal)?;
-            if crossterm::event::read()?.is_key_press() {
-                break Ok(());
-            }
-        }
+        };
+        Ok(())
     }
 
     fn draw(&mut self, terminal: &mut DefaultTerminal) -> std::io::Result<()> {
         terminal.draw(|frame| frame.render_widget(self, frame.area()))?;
         Ok(())
+    }
+
+    fn handle_keys(&mut self) -> std::io::Result<()> {
+        if crossterm::event::poll(self.tick_timeout)? {
+            if crossterm::event::read()?.is_key_press() {
+                self.stop();
+            };
+        };
+        Ok(())
+    }
+
+    fn stop(&mut self) {
+        self.over = true;
     }
 }
 
@@ -59,6 +74,8 @@ impl Default for Game {
             width: 200,
             height: 200,
             snake: Snake::new(),
+            tick_timeout: std::time::Duration::from_millis(100),
+            over: false,
         }
     }
 }
