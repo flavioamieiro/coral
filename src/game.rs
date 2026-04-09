@@ -9,28 +9,7 @@ use ratatui::{
     DefaultTerminal,
 };
 
-struct Point {
-    x: u32,
-    y: u32,
-}
-
-struct Snake {
-    positions: Vec<Point>,
-}
-
-impl Snake {
-    pub fn new() -> Self {
-        let mut starting_position = Vec::new();
-
-        for i in 100..120 {
-            starting_position.push(Point { x: i, y: 100 });
-        }
-
-        Snake {
-            positions: starting_position,
-        }
-    }
-}
+use crate::snake::Snake;
 
 pub struct Game {
     width: u32,
@@ -45,6 +24,7 @@ impl Game {
         while !self.over {
             self.handle_keys()?;
             self.draw(terminal)?;
+            self.snake.update();
         };
         Ok(())
     }
