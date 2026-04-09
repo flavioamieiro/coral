@@ -33,7 +33,7 @@ impl Snake {
     pub fn new() -> Self {
         let mut starting_position = Vec::new();
 
-        for i in 100..102 {
+        for i in 100..120 {
             starting_position.push(Point { x: i, y: 100 });
         }
 
