@@ -9,7 +9,7 @@ use ratatui::{
     widgets::{Block, Widget, canvas},
 };
 
-use crate::snake::Snake;
+use crate::snake::{Direction, Snake};
 
 pub struct Game {
     width: u32,
@@ -35,10 +35,19 @@ impl Game {
     }
 
     fn handle_keys(&mut self) -> std::io::Result<()> {
-        if crossterm::event::poll(self.tick_timeout)? {
-            if crossterm::event::read()?.is_key_press() {
-                self.stop();
-            };
+        if crossterm::event::poll(self.tick_timeout)?
+            && let Event::Key(event) = crossterm::event::read()?
+        {
+            match event.code {
+                KeyCode::Up | KeyCode::Char('w') => self.snake.change_direction(Direction::Up),
+                KeyCode::Down | KeyCode::Char('s') => self.snake.change_direction(Direction::Down),
+                KeyCode::Left | KeyCode::Char('a') => self.snake.change_direction(Direction::Left),
+                KeyCode::Right | KeyCode::Char('d') => {
+                    self.snake.change_direction(Direction::Right)
+                }
+                KeyCode::Esc | KeyCode::Char('q') => self.stop(),
+                _ => {}
+            }
         };
         Ok(())
     }
