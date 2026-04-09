@@ -9,12 +9,14 @@ use ratatui::{
     widgets::{Block, Widget, canvas},
 };
 
-use crate::snake::{Direction, Snake};
+use crate::snake::{Direction, Point, Snake};
 
 pub struct Game {
     width: u32,
     height: u32,
+    level: u32,
     snake: Snake,
+    fruit: Point,
     poll_timeout: std::time::Duration,
     over: bool,
 }
@@ -64,8 +66,23 @@ impl Game {
                 self.stop();
                 return true;
             }
+            if *point == self.fruit {
+                self.level_up();
+                return true;
+            }
         }
         false
+    }
+
+    fn level_up(&mut self) {
+        self.level += 1;
+        let decrease = self.poll_timeout / 10;
+        self.poll_timeout -= decrease;
+        self.fruit = Point {
+            x: rand::random_range(0..self.width) as i32,
+            y: rand::random_range(0..self.height) as i32,
+        };
+        self.snake.grow();
     }
 
     fn stop(&mut self) {
@@ -75,10 +92,21 @@ impl Game {
 
 impl Default for Game {
     fn default() -> Self {
+
+        let width = 50;
+        let height = 50;
+
+        let fruit = Point {
+            x: rand::random_range(0..width as i32),
+            y: rand::random_range(0..height as i32),
+        };
+
         Game {
-            width: 50,
-            height: 50,
+            width,
+            height,
+            level: 1,
             snake: Snake::new(),
+            fruit,
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
         }
@@ -105,7 +133,16 @@ impl Widget for &mut Game {
             .x_bounds([0.0, self.width.into()])
             .y_bounds([0.0, self.height.into()])
             .paint(|ctx| {
+                ctx.draw(&canvas::Rectangle::new(
+                    self.fruit.x.into(),
+                    self.fruit.y.into(),
+                    1.0,
+                    1.0,
+                    Color::Blue,
+                ));
+
                 ctx.marker(symbols::Marker::Sextant);
+
                 for point in &self.snake.positions {
                     ctx.draw(&canvas::Rectangle::new(
                         point.x.into(),
@@ -119,7 +156,6 @@ impl Widget for &mut Game {
             .render(area, buf);
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -142,6 +178,7 @@ mod tests {
             height: 50,
             level: 1,
             snake,
+            fruit: Point { x: 10, y: 10 },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
         };
@@ -166,6 +203,7 @@ mod tests {
             height: 50,
             level: 1,
             snake,
+            fruit: Point { x: 10, y: 10 },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
         };
@@ -190,6 +228,7 @@ mod tests {
             height: 50,
             level: 1,
             snake,
+            fruit: Point { x: 10, y: 10 },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
         };
@@ -214,6 +253,7 @@ mod tests {
             height: 50,
             level: 1,
             snake,
+            fruit: Point { x: 10, y: 10 },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
         };
@@ -241,6 +281,7 @@ mod tests {
             height: 50,
             level: 1,
             snake,
+            fruit: Point { x: 10, y: 10 },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
         };
@@ -265,6 +306,7 @@ mod tests {
             height: 50,
             level: 1,
             snake,
+            fruit: Point { x: 10, y: 10 },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
         };
@@ -272,4 +314,58 @@ mod tests {
         assert!(!game.check_collisions());
         assert!(!game.over);
     }
+
+    #[test]
+    fn collide_if_snake_hits_fruit_but_does_not_stop_game() {
+        let positions = vec![
+            Point { x: 0, y: 0 },
+            Point { x: 0, y: 1 },
+            Point { x: 0, y: 2 },
+        ];
+
+        let mut snake = Snake::new();
+        snake.positions = positions;
+
+        let mut game = Game {
+            width: 50,
+            height: 50,
+            level: 1,
+            snake,
+            fruit: Point { x: 0, y: 1 },
+            poll_timeout: std::time::Duration::from_millis(100),
+            over: false,
+        };
+
+        assert!(game.check_collisions());
+        assert!(!game.over);
+        assert_eq!(game.level, 2);
+    }
+
+    #[test]
+    fn level_up() {
+        let mut game = Game::default();
+
+        let start_fruit_position = game.fruit.clone();
+
+        // Check initial state as a reference
+        assert_eq!(game.level, 1);
+        assert_eq!(game.poll_timeout, std::time::Duration::from_millis(100));
+        assert_eq!(game.snake.positions.len(), 5);
+
+        game.level_up();
+
+        assert_eq!(game.level, 2);
+        assert_eq!(game.poll_timeout, std::time::Duration::from_millis(90));
+        assert_ne!(game.fruit, start_fruit_position); // This can fail if we're *very* unlucky
+        assert_eq!(game.snake.positions.len(), 6);
+
+        let second_fruit_position = game.fruit.clone();
+
+        game.level_up();
+
+        assert_eq!(game.level, 3);
+        assert_eq!(game.poll_timeout, std::time::Duration::from_millis(81));
+        assert_ne!(game.fruit, second_fruit_position); // This can fail if we're *very* unlucky
+        assert_eq!(game.snake.positions.len(), 7);
+  }
 }

@@ -1,4 +1,4 @@
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
@@ -67,6 +67,11 @@ impl Snake {
         };
 
         self.positions.push(new_head);
+    }
+
+    pub fn grow(&mut self) {
+        let tail = self.positions[0].clone();
+        self.positions.insert(0, tail);
     }
 
     pub fn change_direction(&mut self, new_direction: Direction) {
@@ -474,5 +479,29 @@ mod tests {
 
         snake.update();
         assert_eq!(snake.positions, expected_positions);
+    }
+
+    #[test]
+    fn grow_snake() {
+
+        let initial_positions = vec![
+            Point { x: 0, y: 0 },
+            Point { x: 1, y: 0 },
+            Point { x: 2, y: 0 },
+        ];
+
+        let mut snake = Snake {
+            positions: initial_positions,
+            direction: Direction::Right,
+        };
+
+        snake.grow();
+
+        assert_eq!(snake.positions[0], Point {x: 0, y: 0});
+        assert_eq!(snake.positions[1], Point {x: 0, y: 0});
+
+        snake.update();
+        assert_eq!(snake.positions[0], Point {x: 0, y: 0});
+        assert_eq!(snake.positions[1], Point {x: 1, y: 0});
     }
 }
