@@ -1,12 +1,12 @@
 use crossterm::event::{Event, KeyCode};
 use ratatui::{
+    DefaultTerminal,
     buffer::Buffer,
     layout::Rect,
     style::{Color, Stylize},
     symbols,
     text::Line,
-    widgets::{canvas, Block, Widget},
-    DefaultTerminal,
+    widgets::{Block, Widget, canvas},
 };
 
 use crate::snake::Snake;
@@ -25,7 +25,7 @@ impl Game {
             self.handle_keys()?;
             self.draw(terminal)?;
             self.snake.update();
-        };
+        }
         Ok(())
     }
 
@@ -82,7 +82,13 @@ impl Widget for &mut Game {
             .paint(|ctx| {
                 ctx.marker(symbols::Marker::Sextant);
                 for point in &self.snake.positions {
-                    ctx.draw(&canvas::Rectangle::new(point.x.into(), point.y.into(), 1.0, 1.0, Color::Magenta));
+                    ctx.draw(&canvas::Rectangle::new(
+                        point.x.into(),
+                        point.y.into(),
+                        1.0,
+                        1.0,
+                        Color::Magenta,
+                    ));
                 }
             })
             .render(area, buf);
