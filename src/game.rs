@@ -19,18 +19,22 @@ pub struct Game {
     fruit: Point,
     poll_timeout: std::time::Duration,
     over: bool,
+    should_exit: bool
 }
 
 impl Game {
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> std::io::Result<()> {
         while !self.over {
-            self.handle_keys()?;
             self.draw(terminal)?;
+            self.handle_keys()?;
             self.snake.update();
             self.check_collisions();
         }
-        self.draw(terminal)?;
-        crossterm::event::read()?;
+        if !self.should_exit {
+            self.draw(terminal)?;
+            crossterm::event::read()?;
+            self.should_exit = true;
+        }
         Ok(())
     }
 
@@ -50,7 +54,10 @@ impl Game {
                 KeyCode::Right | KeyCode::Char('d') => {
                     self.snake.change_direction(Direction::Right)
                 }
-                KeyCode::Esc | KeyCode::Char('q') => self.stop(),
+                KeyCode::Esc | KeyCode::Char('q') => {
+                    self.should_exit = true;
+                    self.stop();
+                },
                 _ => {}
             }
         };
@@ -110,6 +117,7 @@ impl Default for Game {
             fruit,
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
+            should_exit: false,
         }
     }
 }
@@ -201,6 +209,7 @@ mod tests {
             fruit: Point { x: 10, y: 10 },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
+            should_exit: false,
         };
 
         assert!(game.check_collisions());
@@ -226,6 +235,7 @@ mod tests {
             fruit: Point { x: 10, y: 10 },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
+            should_exit: false,
         };
 
         assert!(game.check_collisions());
@@ -251,6 +261,7 @@ mod tests {
             fruit: Point { x: 10, y: 10 },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
+            should_exit: false,
         };
 
         assert!(game.check_collisions());
@@ -276,6 +287,7 @@ mod tests {
             fruit: Point { x: 10, y: 10 },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
+            should_exit: false,
         };
 
         assert!(game.check_collisions());
@@ -304,6 +316,7 @@ mod tests {
             fruit: Point { x: 10, y: 10 },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
+            should_exit: false,
         };
 
         assert!(game.check_collisions());
@@ -329,6 +342,7 @@ mod tests {
             fruit: Point { x: 10, y: 10 },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
+            should_exit: false,
         };
 
         assert!(!game.check_collisions());
@@ -354,6 +368,7 @@ mod tests {
             fruit: Point { x: 0, y: 1 },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
+            should_exit: false,
         };
 
         assert!(game.check_collisions());
