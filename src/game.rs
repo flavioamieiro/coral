@@ -101,8 +101,10 @@ impl Game {
 
 impl Default for Game {
     fn default() -> Self {
-        let width = 50;
-        let height = 50;
+        let (rows, cols) = crossterm::terminal::size().unwrap();
+
+        let width = rows/2;
+        let height = cols/2;
 
         let fruit = Point {
             x: rand::random_range(0..width as i32),
@@ -110,8 +112,8 @@ impl Default for Game {
         };
 
         Game {
-            width,
-            height,
+            width: width as u32,
+            height: height as u32,
             level: 1,
             snake: Snake::new(),
             fruit,
