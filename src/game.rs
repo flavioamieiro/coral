@@ -2,11 +2,11 @@ use crossterm::event::{Event, KeyCode};
 use ratatui::{
     DefaultTerminal,
     buffer::Buffer,
-    layout::Rect,
-    style::{Color, Stylize},
+    layout::{Constraint, Rect},
+    style::{Color, Style, Stylize},
     symbols,
     text::Line,
-    widgets::{Block, Widget, canvas},
+    widgets::{Block, Paragraph, Widget, canvas},
 };
 
 use crate::snake::{Direction, Point, Snake};
@@ -29,6 +29,8 @@ impl Game {
             self.snake.update();
             self.check_collisions();
         }
+        self.draw(terminal)?;
+        crossterm::event::read()?;
         Ok(())
     }
 
@@ -156,6 +158,23 @@ impl Widget for &mut Game {
                 }
             })
             .render(area, buf);
+
+        if self.over {
+            let popup_area = area.centered(Constraint::Percentage(50), Constraint::Length(5));
+            ratatui::widgets::Clear.render(popup_area, buf);
+            Paragraph::new(vec![
+                "Game over :(".into(),
+                "".into(),
+                Line::from("Press any key to exit.").style(Style::default().italic()),
+            ])
+            .centered()
+            .block(
+                Block::bordered()
+                    .title(" Game Over ")
+                    .border_style(Style::default().fg(Color::Red)),
+            )
+            .render(popup_area, buf);
+        }
     }
 }
 
