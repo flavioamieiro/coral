@@ -483,7 +483,6 @@ mod tests {
 
     #[test]
     fn grow_snake() {
-
         let initial_positions = vec![
             Point { x: 0, y: 0 },
             Point { x: 1, y: 0 },
@@ -497,11 +496,11 @@ mod tests {
 
         snake.grow();
 
-        assert_eq!(snake.positions[0], Point {x: 0, y: 0});
-        assert_eq!(snake.positions[1], Point {x: 0, y: 0});
+        assert_eq!(snake.positions[0], Point { x: 0, y: 0 });
+        assert_eq!(snake.positions[1], Point { x: 0, y: 0 });
 
         snake.update();
-        assert_eq!(snake.positions[0], Point {x: 0, y: 0});
-        assert_eq!(snake.positions[1], Point {x: 1, y: 0});
+        assert_eq!(snake.positions[0], Point { x: 0, y: 0 });
+        assert_eq!(snake.positions[1], Point { x: 1, y: 0 });
     }
 }

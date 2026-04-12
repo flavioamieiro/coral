@@ -94,7 +94,6 @@ impl Game {
 
 impl Default for Game {
     fn default() -> Self {
-
         let width = 50;
         let height = 50;
 
@@ -388,5 +387,5 @@ mod tests {
         assert_eq!(game.poll_timeout, std::time::Duration::from_millis(81));
         assert_ne!(game.fruit, second_fruit_position); // This can fail if we're *very* unlucky
         assert_eq!(game.snake.positions.len(), 7);
-  }
+    }
 }
