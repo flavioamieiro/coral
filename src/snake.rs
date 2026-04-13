@@ -1,3 +1,5 @@
+use ratatui::widgets::canvas::{Painter, Rectangle, Shape};
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct Point {
     pub x: i32,
@@ -78,6 +80,20 @@ impl Snake {
         if !self.direction.conflicts(&new_direction) {
             self.direction = new_direction;
         };
+    }
+}
+
+impl Shape for Snake {
+    fn draw(&self, painter: &mut Painter<'_, '_>) {
+        for point in &self.positions {
+            Rectangle::new(
+                point.x.into(),
+                point.y.into(),
+                1.0,
+                1.0,
+                ratatui::style::Color::Magenta,
+            ).draw(painter);
+        }
     }
 }
 

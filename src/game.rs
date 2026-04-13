@@ -155,16 +155,8 @@ impl Widget for &mut Game {
                 ));
 
                 ctx.marker(symbols::Marker::Sextant);
+                ctx.draw(&self.snake);
 
-                for point in &self.snake.positions {
-                    ctx.draw(&canvas::Rectangle::new(
-                        point.x.into(),
-                        point.y.into(),
-                        1.0,
-                        1.0,
-                        Color::Magenta,
-                    ));
-                }
             })
             .render(area, buf);
 
