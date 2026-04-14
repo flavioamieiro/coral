@@ -9,7 +9,7 @@ use ratatui::{
     widgets::{Block, Paragraph, Widget, canvas},
 };
 
-use crate::snake::{Direction, Point, Snake};
+use crate::fruit::Fruit;
 use crate::geometry::Direction;
 use crate::snake::Snake;
 
@@ -18,7 +18,7 @@ pub struct Game {
     height: u32,
     level: u32,
     snake: Snake,
-    fruit: Point,
+    fruit: Fruit,
     poll_timeout: std::time::Duration,
     over: bool,
     should_exit: bool,
@@ -77,7 +77,7 @@ impl Game {
                 self.stop();
                 return true;
             }
-            if *point == self.fruit {
+            if *point == self.fruit.position {
                 self.level_up();
                 return true;
             }
@@ -89,10 +89,7 @@ impl Game {
         self.level += 1;
         let decrease = self.poll_timeout / 10;
         self.poll_timeout -= decrease;
-        self.fruit = Point {
-            x: rand::random_range(0..self.width) as i32,
-            y: rand::random_range(0..self.height) as i32,
-        };
+        self.fruit = Fruit::random(self.width as i32, self.height as i32);
         self.snake.grow();
     }
 
@@ -108,10 +105,7 @@ impl Default for Game {
         let width = rows / 4;
         let height = cols / 2;
 
-        let fruit = Point {
-            x: rand::random_range(0..width as i32),
-            y: rand::random_range(0..height as i32),
-        };
+        let fruit = Fruit::random(width as i32, height as i32);
 
         Game {
             width: width as u32,
@@ -149,8 +143,8 @@ impl Widget for &mut Game {
             .y_bounds([0.0, self.height.into()])
             .paint(|ctx| {
                 ctx.draw(&canvas::Rectangle::new(
-                    self.fruit.x.into(),
-                    self.fruit.y.into(),
+                    self.fruit.position.x.into(),
+                    self.fruit.position.y.into(),
                     1.0,
                     1.0,
                     Color::Blue,
@@ -201,7 +195,9 @@ mod tests {
             height: 50,
             level: 1,
             snake,
-            fruit: Point { x: 10, y: 10 },
+            fruit: Fruit {
+                position: Point { x: 10, y: 10 },
+            },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
             should_exit: false,
@@ -227,7 +223,9 @@ mod tests {
             height: 50,
             level: 1,
             snake,
-            fruit: Point { x: 10, y: 10 },
+            fruit: Fruit {
+                position: Point { x: 10, y: 10 },
+            },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
             should_exit: false,
@@ -253,7 +251,9 @@ mod tests {
             height: 50,
             level: 1,
             snake,
-            fruit: Point { x: 10, y: 10 },
+            fruit: Fruit {
+                position: Point { x: 10, y: 10 },
+            },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
             should_exit: false,
@@ -279,7 +279,9 @@ mod tests {
             height: 50,
             level: 1,
             snake,
-            fruit: Point { x: 10, y: 10 },
+            fruit: Fruit {
+                position: Point { x: 10, y: 10 },
+            },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
             should_exit: false,
@@ -308,7 +310,9 @@ mod tests {
             height: 50,
             level: 1,
             snake,
-            fruit: Point { x: 10, y: 10 },
+            fruit: Fruit {
+                position: Point { x: 10, y: 10 },
+            },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
             should_exit: false,
@@ -334,7 +338,9 @@ mod tests {
             height: 50,
             level: 1,
             snake,
-            fruit: Point { x: 10, y: 10 },
+            fruit: Fruit {
+                position: Point { x: 10, y: 10 },
+            },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
             should_exit: false,
@@ -360,7 +366,9 @@ mod tests {
             height: 50,
             level: 1,
             snake,
-            fruit: Point { x: 0, y: 1 },
+            fruit: Fruit {
+                position: Point { x: 0, y: 1 },
+            },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
             should_exit: false,
@@ -375,7 +383,7 @@ mod tests {
     fn level_up() {
         let mut game = Game::default();
 
-        let start_fruit_position = game.fruit.clone();
+        let start_fruit_position = game.fruit.position.clone();
 
         // Check initial state as a reference
         assert_eq!(game.level, 1);
@@ -386,16 +394,16 @@ mod tests {
 
         assert_eq!(game.level, 2);
         assert_eq!(game.poll_timeout, std::time::Duration::from_millis(90));
-        assert_ne!(game.fruit, start_fruit_position); // This can fail if we're *very* unlucky
+        assert_ne!(game.fruit.position, start_fruit_position); // This can fail if we're *very* unlucky
         assert_eq!(game.snake.positions.len(), 6);
 
-        let second_fruit_position = game.fruit.clone();
+        let second_fruit_position = game.fruit.position.clone();
 
         game.level_up();
 
         assert_eq!(game.level, 3);
         assert_eq!(game.poll_timeout, std::time::Duration::from_millis(81));
-        assert_ne!(game.fruit, second_fruit_position); // This can fail if we're *very* unlucky
+        assert_ne!(game.fruit.position, second_fruit_position); // This can fail if we're *very* unlucky
         assert_eq!(game.snake.positions.len(), 7);
     }
 }

@@ -1,3 +1,4 @@
+mod fruit;
 mod game;
 mod geometry;
 mod snake;
