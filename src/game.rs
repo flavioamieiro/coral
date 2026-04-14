@@ -56,7 +56,7 @@ impl Game {
                 KeyCode::Down | KeyCode::Char('s') => self.snake.change_direction(Direction::Down),
                 KeyCode::Left | KeyCode::Char('a') => self.snake.change_direction(Direction::Left),
                 KeyCode::Right | KeyCode::Char('d') => {
-                    self.snake.change_direction(Direction::Right)
+                    self.snake.change_direction(Direction::Right);
                 }
                 KeyCode::Esc | KeyCode::Char('q') => {
                     self.should_exit = true;
@@ -64,16 +64,16 @@ impl Game {
                 }
                 _ => {}
             }
-        };
+        }
         Ok(())
     }
 
     fn check_collisions(&mut self) -> bool {
         for (idx, point) in self.snake.positions.iter().enumerate() {
             if point.x < 0
-                || point.x >= self.width as i32
+                || point.x >= self.width.cast_signed()
                 || point.y < 0
-                || point.y >= self.height as i32
+                || point.y >= self.height.cast_signed()
                 || self.snake.positions[..idx].contains(point)
             {
                 self.stop();
@@ -91,7 +91,7 @@ impl Game {
         self.level += 1;
         let decrease = self.poll_timeout / 10;
         self.poll_timeout -= decrease;
-        self.fruit = Fruit::random(self.width as i32, self.height as i32);
+        self.fruit = Fruit::random(self.width.cast_signed(), self.height.cast_signed());
         self.snake.grow();
     }
 
@@ -107,11 +107,11 @@ impl Default for Game {
         let width = rows / 4;
         let height = cols / 2;
 
-        let fruit = Fruit::random(width as i32, height as i32);
+        let fruit = Fruit::random(i32::from(width), i32::from(height));
 
         Game {
-            width: width as u32,
-            height: height as u32,
+            width: u32::from(width),
+            height: u32::from(height),
             level: 1,
             snake: Snake::new(),
             fruit,

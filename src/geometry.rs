@@ -52,8 +52,9 @@ impl FilledRectangle {
 
 impl Shape for FilledRectangle {
     fn draw(&self, painter: &mut Painter) {
+        #[allow(clippy::cast_possible_truncation)]
         let subdivisions: i32 = (self.height / self.fill_step).round() as i32;
-        for y_off in (1..subdivisions).map(|y| y as f64 * self.fill_step) {
+        for y_off in (1..subdivisions).map(|y| f64::from(y) * self.fill_step) {
             let this_y = self.y + y_off;
             Rectangle::new(self.x, this_y, self.width, self.fill_step, self.color).draw(painter);
         }

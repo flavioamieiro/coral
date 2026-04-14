@@ -56,7 +56,7 @@ impl Snake {
     pub fn change_direction(&mut self, new_direction: Direction) {
         if !self.direction.conflicts(&new_direction) {
             self.direction = new_direction;
-        };
+        }
     }
 }
 
