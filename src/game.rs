@@ -142,15 +142,8 @@ impl Widget for &mut Game {
             .x_bounds([0.0, self.width.into()])
             .y_bounds([0.0, self.height.into()])
             .paint(|ctx| {
-                ctx.draw(&canvas::Rectangle::new(
-                    self.fruit.position.x.into(),
-                    self.fruit.position.y.into(),
-                    1.0,
-                    1.0,
-                    Color::Blue,
-                ));
-
                 ctx.marker(symbols::Marker::Sextant);
+                ctx.draw(&self.fruit);
                 ctx.draw(&self.snake);
             })
             .render(area, buf);
@@ -197,6 +190,7 @@ mod tests {
             snake,
             fruit: Fruit {
                 position: Point { x: 10, y: 10 },
+                color: Color::Magenta,
             },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
@@ -225,6 +219,7 @@ mod tests {
             snake,
             fruit: Fruit {
                 position: Point { x: 10, y: 10 },
+                color: Color::Magenta,
             },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
@@ -253,6 +248,7 @@ mod tests {
             snake,
             fruit: Fruit {
                 position: Point { x: 10, y: 10 },
+                color: Color::Magenta,
             },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
@@ -281,6 +277,7 @@ mod tests {
             snake,
             fruit: Fruit {
                 position: Point { x: 10, y: 10 },
+                color: Color::Magenta,
             },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
@@ -312,6 +309,7 @@ mod tests {
             snake,
             fruit: Fruit {
                 position: Point { x: 10, y: 10 },
+                color: Color::Magenta,
             },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
@@ -340,6 +338,7 @@ mod tests {
             snake,
             fruit: Fruit {
                 position: Point { x: 10, y: 10 },
+                color: Color::Magenta,
             },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
@@ -368,6 +367,7 @@ mod tests {
             snake,
             fruit: Fruit {
                 position: Point { x: 0, y: 1 },
+                color: Color::Magenta,
             },
             poll_timeout: std::time::Duration::from_millis(100),
             over: false,
