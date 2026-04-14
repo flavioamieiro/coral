@@ -34,7 +34,9 @@ impl Game {
         }
         if !self.should_exit {
             self.draw(terminal)?;
-            crossterm::event::read()?;
+            while let Event::Key(event) = crossterm::event::read()?
+                && event.code != KeyCode::Char('q')
+            {}
             self.should_exit = true;
         }
         Ok(())
@@ -154,7 +156,7 @@ impl Widget for &mut Game {
             Paragraph::new(vec![
                 "Game over :(".into(),
                 "".into(),
-                Line::from("Press any key to exit.").style(Style::default().italic()),
+                Line::from("Press 'q' to exit.").style(Style::default().italic()),
             ])
             .centered()
             .block(
