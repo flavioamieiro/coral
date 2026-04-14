@@ -10,6 +10,8 @@ use ratatui::{
 };
 
 use crate::snake::{Direction, Point, Snake};
+use crate::geometry::Direction;
+use crate::snake::Snake;
 
 pub struct Game {
     width: u32,
@@ -181,7 +183,7 @@ impl Widget for &mut Game {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::snake::Point;
+    use crate::geometry::Point;
 
     #[test]
     fn collide_if_snake_hits_left_wall() {
