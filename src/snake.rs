@@ -1,4 +1,7 @@
-use ratatui::widgets::canvas::{Painter, Rectangle, Shape};
+use ratatui::{
+    style::Color,
+    widgets::canvas::{Painter, Rectangle, Shape},
+};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Point {
@@ -21,6 +24,38 @@ impl Direction {
             Self::Down => other == &Self::Up,
             Self::Left => other == &Self::Right,
             Self::Right => other == &Self::Left,
+        }
+    }
+}
+
+struct FilledRectangle {
+    pub x: f64,
+    pub y: f64,
+    pub width: f64,
+    pub height: f64,
+    pub fill_step: f64,
+    pub color: Color,
+}
+
+impl FilledRectangle {
+    pub fn new(x: f64, y: f64, width: f64, height: f64, fill_step: f64, color: Color) -> Self {
+        Self {
+            x,
+            y,
+            width,
+            height,
+            fill_step,
+            color,
+        }
+    }
+}
+
+impl Shape for FilledRectangle {
+    fn draw(&self, painter: &mut Painter) {
+        let subdivisions: i32 = (self.height / self.fill_step).round() as i32;
+        for y_off in (1..subdivisions).map(|y| y as f64 * self.fill_step) {
+            let this_y = self.y + y_off;
+            Rectangle::new(self.x, this_y, self.width, self.fill_step, self.color).draw(painter);
         }
     }
 }
@@ -86,13 +121,15 @@ impl Snake {
 impl Shape for Snake {
     fn draw(&self, painter: &mut Painter<'_, '_>) {
         for point in &self.positions {
-            Rectangle::new(
+            FilledRectangle::new(
                 point.x.into(),
                 point.y.into(),
                 1.0,
                 1.0,
-                ratatui::style::Color::Magenta,
-            ).draw(painter);
+                0.1,
+                ratatui::style::Color::Cyan,
+            )
+            .draw(painter);
         }
     }
 }
