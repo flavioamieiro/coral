@@ -19,7 +19,7 @@ pub struct Game {
     fruit: Point,
     poll_timeout: std::time::Duration,
     over: bool,
-    should_exit: bool
+    should_exit: bool,
 }
 
 impl Game {
@@ -57,7 +57,7 @@ impl Game {
                 KeyCode::Esc | KeyCode::Char('q') => {
                     self.should_exit = true;
                     self.stop();
-                },
+                }
                 _ => {}
             }
         };
@@ -103,8 +103,8 @@ impl Default for Game {
     fn default() -> Self {
         let (rows, cols) = crossterm::terminal::size().unwrap();
 
-        let width = rows/2;
-        let height = cols/2;
+        let width = rows / 2;
+        let height = cols / 2;
 
         let fruit = Point {
             x: rand::random_range(0..width as i32),
@@ -156,7 +156,6 @@ impl Widget for &mut Game {
 
                 ctx.marker(symbols::Marker::Sextant);
                 ctx.draw(&self.snake);
-
             })
             .render(area, buf);
 
