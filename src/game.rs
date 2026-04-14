@@ -103,7 +103,7 @@ impl Default for Game {
     fn default() -> Self {
         let (rows, cols) = crossterm::terminal::size().unwrap();
 
-        let width = rows / 2;
+        let width = rows / 4;
         let height = cols / 2;
 
         let fruit = Point {
